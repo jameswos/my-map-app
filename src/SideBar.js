@@ -4,7 +4,14 @@ class SideBar extends Component {
 
   state = {
     query: '',
-    filteredMarkers: []
+    filteredMarkers: [],
+    selectedItem: null
+  }
+
+  showInfo(e, selectedItem) {
+    this.setState({
+      "selectedItem": selectedItem
+    });
   }
 
   componentDidMount() {
