@@ -71,6 +71,7 @@ class App extends Component {
         position: {lat: myPlace.venue.location.lat, lng: myPlace.venue.location.lng},
         map: map,
         title: myPlace.venue.name,
+        id: myPlace.venue.id,
         animation: window.google.maps.Animation.DROP
       });
 
