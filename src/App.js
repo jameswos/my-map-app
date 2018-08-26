@@ -15,6 +15,21 @@ class App extends Component {
 
   loadPlaces = () => {
     const endPoint = "https://api.foursquare.com/v2/venues/explore";
+    const parameters = {
+      client_id: "GVJY0ASSIKQZXNLSH3SUTUP0QHJPIX4HXNW4SH2NNAHTEJP2",
+      client_secret: "5A3ANB4RL11MWKHBA2W0KYGKDIRHERLL1XRZE3JEH1BUS4V5",
+      query: "sports",
+      near: "Leicester, UK",
+      limit: 5
+    }
+
+    axios.get(endPoint + new URLSearchParams(parameters))
+      .then(response => {
+        console.log(response);
+      });
+      .catch(error => {
+        console.log("ERROR!! " + error);
+      })
   }
 
   initMap = () => {
