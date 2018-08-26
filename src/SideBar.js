@@ -3,7 +3,14 @@ import React, { Component } from 'react';
 class SideBar extends Component {
 
   state = {
-    query: ''
+    query: '',
+    filteredMarkers: []
+  }
+
+  componentDidMount() {
+    this.setState({
+      filteredMarkers: this.props.mapMarkers
+    });
   }
 
 
@@ -21,7 +28,7 @@ class SideBar extends Component {
                   className="place-list-item"
                   tabIndex={0}
                   role="button"
-                  
+
                 >
                   <p className="place-list-item-name">{place.venue.name}</p>
                   <p className="place-list-item-address">{place.venue.location.address}</p>

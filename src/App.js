@@ -4,10 +4,16 @@ import axios from 'axios';
 import SideBar from './SideBar.js';
 
 class App extends Component {
-
-  state = {
-    places: [],
-    mapMarkers: []
+  constructor(props) {
+    super(props);
+    this.state = {
+      places: [],
+      mapMarkers: [],
+      infoWindowOpen: false,
+      selectedMarker: {},
+      map: '',
+      windowContent: '',
+    };
   }
 
   componentDidMount() {
@@ -49,6 +55,10 @@ class App extends Component {
       zoom: 15
     });
 
+    this.setState({
+      map
+    });
+
     // Creates the InfoWindow
     let infowindow = new window.google.maps.InfoWindow();
 
@@ -63,6 +73,9 @@ class App extends Component {
         title: myPlace.venue.name,
         animation: window.google.maps.Animation.DROP
       });
+
+      // Get new markers into the state
+      this.state.mapMarkers.push(marker);
 
       // Click on a marker
       marker.addListener('click', () => {
@@ -82,8 +95,6 @@ class App extends Component {
         // Open an infowindow
         infowindow.open(map, marker);
       });
-      // Get new markers into the state
-      this.state.mapMarkers.push(marker);
     });
 
   }
