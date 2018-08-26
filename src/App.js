@@ -27,7 +27,8 @@ class App extends Component {
       near: "Leicester, UK",
       limit: 5
     }
-
+    
+    // Get data for coffee places from Foursquare
     axios.get(endPoint + new URLSearchParams(parameters))
       .then(response => {
         this.setState({
