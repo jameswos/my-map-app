@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
 import axios from 'axios';
-import SideBar from './SideBar.js';
 
 class App extends Component {
   constructor(props) {
@@ -10,6 +9,8 @@ class App extends Component {
     this.infoWindow = null;
     this.state = {
       places: [],
+      selectedItem: null,
+      query: ''
     }
   }
 
@@ -18,9 +19,9 @@ class App extends Component {
   }
 
   componentDidUpdate() {
-    if (this.props.selectedItem) {
-      let selectedMarker = this.markers.find(m => {
-        return m.id === this.props.selectedItem.locationId;
+    if (this.state.selectedItem) {
+      let selectedMarker = this.mapMarkers.find(m => {
+        return m.id === this.state.selectedItem.venue.id;
       });
       this.showInfoWindow(selectedMarker);
     }
@@ -62,52 +63,76 @@ class App extends Component {
     });
 
     // Creates the InfoWindow
-    let infowindow = new window.google.maps.InfoWindow();
+    this.infoWindow = new window.google.maps.InfoWindow({});
+    let bounds = new window.google.maps.LatLngBounds();
 
-    this.state.places.map(myPlace => {
-
-      let contentString = `${myPlace.venue.name}`;
+    this.state.places.forEach(item => {
 
       // Create a marker
-      let marker = new window.google.maps.Marker({
-        position: {lat: myPlace.venue.location.lat, lng: myPlace.venue.location.lng},
+      const marker = new window.google.maps.Marker({
+        position: {lat: item.venue.location.lat, lng: item.venue.location.lng},
         map: map,
-        title: myPlace.venue.name,
-        animation: window.google.maps.Animation.DROP
+        title: item.venue.name,
+        animation: window.google.maps.Animation.DROP,
+        id: item.venue.id
       });
 
       // Click on a marker
       marker.addListener('click', () => {
+        this.showInfoWindow(marker);
 
-        if (marker.getAnimation() !== null) {
-          marker.setAnimation(null);
-        } else {
-          marker.setAnimation(window.google.maps.Animation.BOUNCE);
-          setTimeout(() => {
-            marker.setAnimation(null);
-          }, 750);
-        }
-
-        // Change the content
-        infowindow.setContent(contentString);
-
-        // Open an infowindow
-        infowindow.open(map, marker);
       });
+      bounds.extend(marker.getPosition())
+
       // Get new markers into the state
       this.mapMarkers.push(marker);
     });
+    map.fitBounds(bounds);
+  }
 
+  showInfoWindow(marker) {
+    this.infoWindow.setContent(marker.title);
+    this.infoWindow.open(marker.map, marker);
+    if (marker.getAnimation() !== null) {
+      marker.setAnimation(null);
+    } else {
+      marker.setAnimation(window.google.maps.Animation.BOUNCE);
+      setTimeout(() => {
+        marker.setAnimation(null);
+      }, 750);
+    }
+  }
+
+  showInfo(e, selectedItem) {
+    this.setState({
+      "selectedItem": selectedItem
+    });
   }
 
   render() {
     return (
       <div className="App">
         <div id="map"></div>
-        <SideBar
-          places = {this.state.places}
-          mapMarkers = {this.state.mapMarkers}
-        />
+        <aside>
+          <div className="sideBar">
+            <div className="places-list">
+              <input type="text" placeholder="Search for a place" aria-label="Type to look for a place" value={this.state.query} onChange={(e) => this.refreshQuery(e.target.value)}/>
+              <ul aria-labelledby="Places list">
+                {this.state.places.map((place, index) => (
+                  <li
+                    key={index}
+                    tabIndex={0}
+                    role="button"
+                    onClick={e => this.showInfo(e, place)}
+                  >
+                    <p>{place.venue.name}</p>
+                    <p>{place.venue.location.address}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </aside>
       </div>
     );
   }

@@ -32,13 +32,12 @@ class SideBar extends Component {
               {this.props.places.map((place) => (
                 <li
                   key={place.venue.id}
-                  className="place-list-item"
                   tabIndex={0}
                   role="button"
                   onClick={e => this.showInfo(e, place)}
                 >
-                  <p className="place-list-item-name">{place.venue.name}</p>
-                  <p className="place-list-item-address">{place.venue.location.address}</p>
+                  <p>{place.venue.name}</p>
+                  <p>{place.venue.location.address}</p>
                 </li>
               ))}
             </ul>
