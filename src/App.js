@@ -105,6 +105,7 @@ class App extends Component {
     }
   }
 
+  // https://stackblitz.com/edit/react-qubgz4?file=App.js
   showInfo(e, selectedItem) {
     this.setState({
       "selectedItem": selectedItem
