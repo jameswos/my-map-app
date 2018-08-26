@@ -4,8 +4,12 @@ import axios from 'axios';
 
 class App extends Component {
 
+  state = {
+    places: []
+  }
+
   componentDidMount() {
-    this.loadMap();
+    this.loadPlaces();
   }
 
   loadMap = () => {
@@ -14,28 +18,57 @@ class App extends Component {
   }
 
   loadPlaces = () => {
-    const endPoint = "https://api.foursquare.com/v2/venues/explore";
+    const endPoint = "https://api.foursquare.com/v2/venues/explore?";
     const parameters = {
       client_id: "GVJY0ASSIKQZXNLSH3SUTUP0QHJPIX4HXNW4SH2NNAHTEJP2",
       client_secret: "5A3ANB4RL11MWKHBA2W0KYGKDIRHERLL1XRZE3JEH1BUS4V5",
-      query: "sports",
+      v: "20180323",
+      query: "coffee",
       near: "Leicester, UK",
       limit: 5
     }
 
     axios.get(endPoint + new URLSearchParams(parameters))
       .then(response => {
-        console.log(response);
-      });
+        this.setState({
+          places: response.data.response.groups[0].items
+        }, this.loadMap())
+      })
       .catch(error => {
         console.log("ERROR!! " + error);
       })
   }
-
+  // Creates the map
   initMap = () => {
     let map = new window.google.maps.Map(document.getElementById('map'), {
       center: {lat: 52.637106, lng: -1.139771},
-      zoom: 13
+      zoom: 15
+    });
+
+    // Creates the InfoWindow
+    let infowindow = new window.google.maps.InfoWindow();
+
+    this.state.places.map(myPlace => {
+
+      let contentString = `${myPlace.venue.name}`;
+
+      // Create a marker
+      let marker = new window.google.maps.Marker({
+        position: {lat: myPlace.venue.location.lat, lng: myPlace.venue.location.lng},
+        map: map,
+        title: myPlace.venue.name
+      });
+
+      // Click on a marker
+      marker.addListener('click', () => {
+
+        // Change the content
+        infowindow.setContent(contentString);
+
+        // Open an infowindow
+        infowindow.open(map, marker);
+      });
+
     });
   }
 
