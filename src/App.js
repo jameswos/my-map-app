@@ -35,7 +35,7 @@ class App extends Component {
         }, this.loadMap())
       })
       .catch(error => {
-        console.log("ERROR!! " + error);
+        alert("An error occurred fetching data from Foursquare: " + error);
       })
   }
   // Creates the map
