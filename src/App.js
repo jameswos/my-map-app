@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
 import axios from 'axios';
+import escapeRegExp from 'escape-string-regexp';
+import sortBy from 'sort-by';
 
 class App extends Component {
   constructor(props) {
@@ -109,6 +111,12 @@ class App extends Component {
     });
   }
 
+  refreshQuery = (query) => {
+    this.setState({
+      query: query.trim()
+    });
+  }
+
   render() {
     return (
       <div className="App">
@@ -116,7 +124,13 @@ class App extends Component {
         <aside>
           <div className="sideBar">
             <div className="places-list">
-              <input type="text" placeholder="Search for a place" aria-label="Type to look for a place" value={this.state.query} onChange={(e) => this.refreshQuery(e.target.value)}/>
+              <input
+                type="text"
+                placeholder="Search places"
+                aria-label="Type to look for a place"
+                value={this.state.query}
+                onChange={(e) => this.refreshQuery(e.target.value)}
+              />
               <ul aria-labelledby="Places list">
                 {this.state.places.map((place, index) => (
                   <li
