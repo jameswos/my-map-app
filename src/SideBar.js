@@ -16,7 +16,13 @@ class SideBar extends Component {
             <input type="text" placeholder="Search for a place" aria-label="Type to look for a pace" value={this.state.query} onChange={(e) => this.refreshQuery(e.target.value)}/>
             <ul aria-labelledby="Places list">
               {this.props.places.map((place) => (
-                <li key={place.venue.id} className="place-list-item">
+                <li
+                  key={place.venue.id}
+                  className="place-list-item"
+                  tabIndex={0}
+                  role="button"
+                  
+                >
                   <p className="place-list-item-name">{place.venue.name}</p>
                   <p className="place-list-item-address">{place.venue.location.address}</p>
                 </li>

@@ -6,7 +6,8 @@ import SideBar from './SideBar.js';
 class App extends Component {
 
   state = {
-    places: []
+    places: [],
+    mapMarkers: []
   }
 
   componentDidMount() {
@@ -81,8 +82,10 @@ class App extends Component {
         // Open an infowindow
         infowindow.open(map, marker);
       });
-
+      // Get new markers into the state
+      this.state.mapMarkers.push(marker);
     });
+
   }
 
   render() {
@@ -91,6 +94,7 @@ class App extends Component {
         <div id="map"></div>
         <SideBar
           places = {this.state.places}
+          mapMarkers = {this.state.mapMarkers}
         />
       </div>
     );
