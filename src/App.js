@@ -118,6 +118,15 @@ class App extends Component {
   }
 
   render() {
+
+    let filterPlaces
+    if (this.state.query) {
+      const match = new RegExp(escapeRegExp(this.state.query), 'i')
+      filterPlaces = this.state.places.filter((place) => match.test(place.venue.name))
+    } else {
+      filterPlaces = this.state.places;
+    }
+
     return (
       <div className="App">
         <div id="map"></div>
@@ -132,7 +141,7 @@ class App extends Component {
                 onChange={(e) => this.refreshQuery(e.target.value)}
               />
               <ul aria-labelledby="Places list">
-                {this.state.places.map((place, index) => (
+                {filterPlaces.map((place, index) => (
                   <li
                     key={index}
                     tabIndex={0}
