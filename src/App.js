@@ -6,18 +6,24 @@ import SideBar from './SideBar.js';
 class App extends Component {
   constructor(props) {
     super(props);
+    this.mapMarkers = [];
+    this.infoWindow = null;
     this.state = {
       places: [],
-      mapMarkers: [],
-      infoWindowOpen: false,
-      selectedMarker: {},
-      map: '',
-      windowContent: ''
     }
   }
 
   componentDidMount() {
     this.loadPlaces();
+  }
+
+  componentDidUpdate() {
+    if (this.props.selectedItem) {
+      let selectedMarker = this.markers.find(m => {
+        return m.id === this.props.selectedItem.locationId;
+      });
+      this.showInfoWindow(selectedMarker);
+    }
   }
 
   loadMap = () => {
@@ -89,7 +95,7 @@ class App extends Component {
         infowindow.open(map, marker);
       });
       // Get new markers into the state
-      this.state.mapMarkers.push(marker);
+      this.mapMarkers.push(marker);
     });
 
   }

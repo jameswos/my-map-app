@@ -35,7 +35,7 @@ class SideBar extends Component {
                   className="place-list-item"
                   tabIndex={0}
                   role="button"
-
+                  onClick={e => this.showInfo(e, place)}
                 >
                   <p className="place-list-item-name">{place.venue.name}</p>
                   <p className="place-list-item-address">{place.venue.location.address}</p>
