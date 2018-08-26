@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import axios from 'axios';
+import SideBar from './SideBar.js';
 
 class App extends Component {
 
@@ -27,10 +28,11 @@ class App extends Component {
       near: "Leicester, UK",
       limit: 5
     }
-    
+
     // Get data for coffee places from Foursquare
     axios.get(endPoint + new URLSearchParams(parameters))
       .then(response => {
+        console.log(response.data.response.groups[0].items);
         this.setState({
           places: response.data.response.groups[0].items
         }, this.loadMap())
@@ -57,11 +59,21 @@ class App extends Component {
       let marker = new window.google.maps.Marker({
         position: {lat: myPlace.venue.location.lat, lng: myPlace.venue.location.lng},
         map: map,
-        title: myPlace.venue.name
+        title: myPlace.venue.name,
+        animation: window.google.maps.Animation.DROP
       });
 
       // Click on a marker
       marker.addListener('click', () => {
+
+        if (marker.getAnimation() !== null) {
+          marker.setAnimation(null);
+        } else {
+          marker.setAnimation(window.google.maps.Animation.BOUNCE);
+          setTimeout(() => {
+            marker.setAnimation(null);
+          }, 750);
+        }
 
         // Change the content
         infowindow.setContent(contentString);
@@ -77,6 +89,9 @@ class App extends Component {
     return (
       <div className="App">
         <div id="map"></div>
+        <SideBar
+          places = {this.state.places}
+        />
       </div>
     );
   }

@@ -12,3 +12,44 @@ html, body {
   margin: 0;
   padding: 0;
 }
+
+.sideBar {
+  background-color: #fff;
+  opacity: 0.9;
+  z-index: 1;
+  text-align: left;
+  margin: 5px;
+  width: 25%;
+  position: absolute;
+  padding: 5px;
+  min-width: 120px;
+  height: 400px;
+  overflow-y: scroll;
+  top: 90px;
+}
+
+.places-list {
+  height: 395px;
+}
+
+.places-list ul {
+  width: 100%;
+  padding: 10px 0;
+  height: 390px;
+}
+
+.places-list li {
+  padding: 10px;
+  list-style: none;
+}
+
+input {
+  margin-left: 5px;
+  display: block;
+  padding: 2px;
+  width: 80%;
+}
+
+.place-list-item-address {
+  font-size: small;
+}
