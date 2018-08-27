@@ -69,14 +69,14 @@ class App extends Component {
     let bounds = new window.google.maps.LatLngBounds();
 
     this.state.places.map(item => {
-
       // Create a marker
       const marker = new window.google.maps.Marker({
         position: {lat: item.venue.location.lat, lng: item.venue.location.lng},
         map: map,
         title: item.venue.name,
         animation: window.google.maps.Animation.DROP,
-        id: item.venue.id
+        id: item.venue.id,
+        visible: false
       });
 
       // Click on a marker
@@ -121,12 +121,17 @@ class App extends Component {
   render() {
 
     let filterPlaces
+    let filterMarkers
     if (this.state.query) {
-      const match = new RegExp(escapeRegExp(this.state.query), 'i')
-      filterPlaces = this.state.places.filter((place) => match.test(place.venue.name))
+      const match = new RegExp(escapeRegExp(this.state.query), 'i');
+      filterPlaces = this.state.places.filter((place) => match.test(place.venue.name));
+      filterMarkers = this.state.mapMarkers.id.filter((mark) => match.test(mark.id));
     } else {
       filterPlaces = this.state.places;
+      filterMarkers= this.state.mapMarkers.id;
     }
+
+
 
     const placeList = filterPlaces.map((place, index) => {
       return (
