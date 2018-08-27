@@ -4,6 +4,8 @@ import axios from 'axios';
 import escapeRegExp from 'escape-string-regexp';
 import sortBy from 'sort-by';
 
+let filterPlaces
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -22,7 +24,7 @@ class App extends Component {
 
   componentDidUpdate() {
     if (this.state.selectedItem) {
-      let selectedMarker = this.mapMarkers.find(m => {
+      let selectedMarker = this.state.mapMarkers.find(m => {
         return m.id === this.state.selectedItem.venue.id;
       });
       this.showInfoWindow(selectedMarker);
@@ -32,7 +34,11 @@ class App extends Component {
   loadMap = () => {
     loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyCdU03TvjRBVim4B5U3qa95CuwbVJN4Q2E&callback=initMap");
     window.initMap = this.initMap;
-  }
+    // If there is a problem with authentication - https://developers.google.com/maps/documentation/javascript/events#auth-errors
+    window.gm_authFailure = function() {
+      alert('Cannot load Google Maps! Please ensure that you have a valid Google Maps API key! Please go to https://developers.google.com/maps/documentation/javascript/get-api-key')
+      }
+  };
 
   loadPlaces = () => {
     const endPoint = "https://api.foursquare.com/v2/venues/explore?";
@@ -48,7 +54,6 @@ class App extends Component {
     // Get data for coffee places from Foursquare
     axios.get(endPoint + new URLSearchParams(parameters))
       .then(response => {
-        console.log(response.data.response.groups[0].items);
         this.setState({
           places: response.data.response.groups[0].items
         }, this.loadMap())
@@ -59,16 +64,27 @@ class App extends Component {
   }
   // Creates the map
   initMap = () => {
+    let positions = [];
+
+    const match = new RegExp(escapeRegExp(this.state.query), 'i');
+    
     let map = new window.google.maps.Map(document.getElementById('map'), {
       center: {lat: 52.637106, lng: -1.139771},
       zoom: 15
     });
 
+    if (this.state.query) {
+      const match = new RegExp(escapeRegExp(this.state.query), 'i')
+      filterPlaces = this.state.places.filter((place) => result.test(place.venue.name))
+    } else {
+      filterPlaces = this.state.places;
+    }
+
     // Creates the InfoWindow
     this.infoWindow = new window.google.maps.InfoWindow({});
     let bounds = new window.google.maps.LatLngBounds();
 
-    this.state.places.forEach(item => {
+    filterPlaces.map(item => {
 
       // Create a marker
       const marker = new window.google.maps.Marker({
@@ -76,8 +92,7 @@ class App extends Component {
         map: map,
         title: item.venue.name,
         animation: window.google.maps.Animation.DROP,
-        id: item.venue.id,
-        visible: false
+        id: item.venue.id
       });
 
       // Click on a marker
@@ -121,13 +136,19 @@ class App extends Component {
 
   render() {
 
-    let filterPlaces
-    if (this.state.query) {
-      const match = new RegExp(escapeRegExp(this.state.query), 'i')
-      filterPlaces = this.state.places.filter((place) => match.test(place.venue.name))
-    } else {
-      filterPlaces = this.state.places;
-    }
+    const placeList = filterPlaces.map((place, index) => {
+      return (
+        <li
+          key={index}
+          tabIndex={0}
+          role="button"
+          onClick={e => this.showInfo(e, place)}
+        >
+          <p>{place.venue.name}</p>
+          <p>{place.venue.location.address}</p>
+        </li>
+      )
+    })
 
     return (
       <div className="App">
@@ -146,17 +167,7 @@ class App extends Component {
                 aria-labelledby="Places list"
                 onChange={this.handleChange}
                 >
-                {filterPlaces.map((place, index) => (
-                  <li
-                    key={index}
-                    tabIndex={0}
-                    role="button"
-                    onClick={e => this.showInfo(e, place)}
-                  >
-                    <p>{place.venue.name}</p>
-                    <p>{place.venue.location.address}</p>
-                  </li>
-                ))}
+                {placeList}
               </ul>
             </div>
           </div>
