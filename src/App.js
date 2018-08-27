@@ -156,7 +156,6 @@ class App extends Component {
               />
               <ul
                 aria-labelledby="Places list"
-                onChange={showMarkers}
                 >
                 {placeList}
               </ul>
