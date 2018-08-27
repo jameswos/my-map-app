@@ -33,6 +33,10 @@ class App extends Component {
   loadMap = () => {
     loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyCdU03TvjRBVim4B5U3qa95CuwbVJN4Q2E&callback=initMap");
     window.initMap = this.initMap;
+    // Shows alert when problem with auth, from: https://developers.google.com/maps/documentation/javascript/events#auth-errors
+    window.gm_authFailure = function() {
+      alert('Cannot load Google Maps! Please ensure that you have a valid Google Maps API key! Please go to https://developers.google.com/maps/documentation/javascript/get-api-key')
+      }
   }
 
   loadPlaces = () => {
