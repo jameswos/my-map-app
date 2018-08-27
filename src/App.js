@@ -4,7 +4,6 @@ import axios from 'axios';
 import escapeRegExp from 'escape-string-regexp';
 import sortBy from 'sort-by';
 
-let filterPlaces
 
 class App extends Component {
   constructor(props) {
@@ -34,11 +33,7 @@ class App extends Component {
   loadMap = () => {
     loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyCdU03TvjRBVim4B5U3qa95CuwbVJN4Q2E&callback=initMap");
     window.initMap = this.initMap;
-    // If there is a problem with authentication - https://developers.google.com/maps/documentation/javascript/events#auth-errors
-    window.gm_authFailure = function() {
-      alert('Cannot load Google Maps! Please ensure that you have a valid Google Maps API key! Please go to https://developers.google.com/maps/documentation/javascript/get-api-key')
-      }
-  };
+  }
 
   loadPlaces = () => {
     const endPoint = "https://api.foursquare.com/v2/venues/explore?";
@@ -64,25 +59,16 @@ class App extends Component {
   }
   // Creates the map
   initMap = () => {
-    let positions = [];
-
     let map = new window.google.maps.Map(document.getElementById('map'), {
       center: {lat: 52.637106, lng: -1.139771},
       zoom: 15
     });
 
-    if (this.state.query) {
-      const match = new RegExp(escapeRegExp(this.state.query), 'i')
-      filterPlaces = this.state.places.filter((place) => result.test(place.venue.name))
-    } else {
-      filterPlaces = this.state.places;
-    }
-
     // Creates the InfoWindow
     this.infoWindow = new window.google.maps.InfoWindow({});
     let bounds = new window.google.maps.LatLngBounds();
 
-    filterPlaces.map(item => {
+    this.state.places.map(item => {
 
       // Create a marker
       const marker = new window.google.maps.Marker({
@@ -101,7 +87,7 @@ class App extends Component {
       bounds.extend(marker.getPosition())
 
       // Get new markers into the state
-      positions.push(marker);
+      this.state.mapMarkers.push(marker);
     });
     map.fitBounds(bounds);
   }
@@ -133,6 +119,14 @@ class App extends Component {
   }
 
   render() {
+
+    let filterPlaces
+    if (this.state.query) {
+      const match = new RegExp(escapeRegExp(this.state.query), 'i')
+      filterPlaces = this.state.places.filter((place) => match.test(place.venue.name))
+    } else {
+      filterPlaces = this.state.places;
+    }
 
     const placeList = filterPlaces.map((place, index) => {
       return (
