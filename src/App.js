@@ -66,8 +66,6 @@ class App extends Component {
   initMap = () => {
     let positions = [];
 
-    const match = new RegExp(escapeRegExp(this.state.query), 'i');
-    
     let map = new window.google.maps.Map(document.getElementById('map'), {
       center: {lat: 52.637106, lng: -1.139771},
       zoom: 15
@@ -103,7 +101,7 @@ class App extends Component {
       bounds.extend(marker.getPosition())
 
       // Get new markers into the state
-      this.state.mapMarkers.push(marker);
+      positions.push(marker);
     });
     map.fitBounds(bounds);
   }
