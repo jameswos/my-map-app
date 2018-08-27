@@ -7,10 +7,10 @@ import sortBy from 'sort-by';
 class App extends Component {
   constructor(props) {
     super(props);
-    this.mapMarkers = [];
     this.infoWindow = null;
     this.state = {
       places: [],
+      mapMarkers: [],
       selectedItem: null,
       query: ''
     }
@@ -76,7 +76,8 @@ class App extends Component {
         map: map,
         title: item.venue.name,
         animation: window.google.maps.Animation.DROP,
-        id: item.venue.id
+        id: item.venue.id,
+        visible: false
       });
 
       // Click on a marker
@@ -87,7 +88,7 @@ class App extends Component {
       bounds.extend(marker.getPosition())
 
       // Get new markers into the state
-      this.mapMarkers.push(marker);
+      this.state.mapMarkers.push(marker);
     });
     map.fitBounds(bounds);
   }
@@ -136,12 +137,15 @@ class App extends Component {
             <div className="places-list">
               <input
                 type="text"
-                placeholder="Search places"
-                aria-label="Type to look for a place"
+                placeholder="Filter the places"
+                aria-label="Type to filter the places"
                 value={this.state.query}
                 onChange={(e) => this.refreshQuery(e.target.value)}
               />
-              <ul aria-labelledby="Places list">
+              <ul
+                aria-labelledby="Places list"
+                onChange={this.handleChange}
+                >
                 {filterPlaces.map((place, index) => (
                   <li
                     key={index}
