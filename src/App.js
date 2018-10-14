@@ -124,19 +124,13 @@ class App extends Component {
     });
   }
 
-  refreshQuery = (query) => {
-    this.setState({
-      query: query.trim()
-    });
-  }
-
   // help from simonswiss: https://www.youtube.com/watch?v=A590QnMxsYM & https://github.com/annjkai/FEND-nmap/blob/master/src/App.js
   filterUpdate(value) {
     this.setState({
       query: value
     })
     const { mapMarkers, places, query } = this.state
-    if (query) {
+    if (value.length > 0) {
       const match = new RegExp(escapeRegExp(this.state.query), 'i')
       mapMarkers.forEach(marker => {
         return marker.setVisible(false)
