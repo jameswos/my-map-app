@@ -13,7 +13,10 @@ class App extends Component {
       places: [],
       mapMarkers: [],
       selectedItem: null,
-      query: ''
+      query: '',
+      map: '',
+      searchedPlaces: [],
+      searchedMarkers: []
     }
   }
 
@@ -67,8 +70,11 @@ class App extends Component {
       center: {lat: 52.637106, lng: -1.139771},
       zoom: 15
     });
+    this.setState({
+      map: map
+    })
 
-    // Creates the InfoWindow
+    // Creates the InfoWindo
     this.infoWindow = new window.google.maps.InfoWindow({});
     let bounds = new window.google.maps.LatLngBounds();
 
@@ -76,7 +82,7 @@ class App extends Component {
       // Create a marker
       const marker = new window.google.maps.Marker({
         position: {lat: item.venue.location.lat, lng: item.venue.location.lng},
-        map: map,
+        map: this.state.map,
         title: item.venue.name,
         animation: window.google.maps.Animation.DROP,
         id: item.venue.id
@@ -92,7 +98,7 @@ class App extends Component {
       // Get new markers into the state
       this.state.mapMarkers.push(marker);
     });
-    map.fitBounds(bounds);
+    this.state.map.fitBounds(bounds);
   }
 
   showInfoWindow(marker) {
