@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import './App.css';
-import axios from 'axios';
-import escapeRegExp from 'escape-string-regexp';
-import sortBy from 'sort-by';
+import React, { Component } from 'react'
+import './App.css'
+import axios from 'axios'
+import escapeRegExp from 'escape-string-regexp'
+import Aside from './components/Aside'
 
 
 class App extends Component {
@@ -21,8 +21,8 @@ class App extends Component {
     this.loadPlaces();
   }
 
-  componentDidUpdate() {
-    if (this.state.selectedItem) {
+  componentDidUpdate(nextProps, nextState) {
+    if (nextState.selectedItem !== this.state.selectedItem) {
       let selectedMarker = this.state.mapMarkers.find(m => {
         return m.id === this.state.selectedItem.venue.id;
       });
@@ -72,7 +72,7 @@ class App extends Component {
     this.infoWindow = new window.google.maps.InfoWindow({});
     let bounds = new window.google.maps.LatLngBounds();
 
-    this.state.places.map(item => {
+    this.state.places.forEach(item => {
       // Create a marker
       const marker = new window.google.maps.Marker({
         position: {lat: item.venue.location.lat, lng: item.venue.location.lng},
@@ -121,6 +121,13 @@ class App extends Component {
     });
   }
 
+  // help from simonswiss: https://www.youtube.com/watch?v=A590QnMxsYM
+  filterUpdate(value) {
+    this.setState({
+      query: value
+    })
+  }
+
   render() {
     // Should I try to add something here to change the visibility of my markers???
     let filterPlaces
@@ -131,43 +138,16 @@ class App extends Component {
       filterPlaces = this.state.places;
     }
 
-    const placeList = filterPlaces.map((place, index) => {
-      return (
-        <li
-          key={index}
-          tabIndex={0}
-          role="button"
-          onClick={e => this.showInfo(e, place)}
-        >
-          <p>{place.venue.name}</p>
-          <p>{place.venue.location.address}</p>
-        </li>
-      )
-    })
-
     return (
       <div className="App">
         <div id="map"></div>
-        <aside>
-          <div className="sideBar">
-            <div className="places-list">
-              <input
-                type="text"
-                placeholder="Filter the places"
-                aria-label="Type to filter the places"
-                value={this.state.query}
-                onChange={(e) => this.refreshQuery(e.target.value)}
-              />
-              <ul
-                aria-labelledby="Places list"
-                >
-                {placeList}
-              </ul>
-            </div>
-          </div>
-        </aside>
+        <Aside
+          filterUpdate={this.filterUpdate.bind(this)}
+          filterPlaces={filterPlaces}
+          showInfo={this.showInfo.bind(this)}
+        />
       </div>
-    );
+    )
   }
 }
 
