@@ -34,6 +34,10 @@ class Aside extends Component {
               ref={ (value) => { this.myValue = value } }
               onChange={this.queryUpdate.bind(this)}
             />
+            <div className="sidebar-attribution" role="contentinfo" tabIndex="-1">
+              <p>Third-party data provided by Google Maps</p>
+              <p> and Foursquare</p>
+            </div>
             <ul
               aria-labelledby="Places list"
             >

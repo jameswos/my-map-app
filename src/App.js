@@ -54,10 +54,12 @@ class App extends Component {
     }
 
     // Get data for coffee places from Foursquare
+    // Help from https://www.youtube.com/playlist?list=PLgOB68PvvmWCGNn8UMTpcfQEiITzxEEA1
     axios.get(endPoint + new URLSearchParams(parameters))
       .then(response => {
         this.setState({
-          places: response.data.response.groups[0].items
+          places: response.data.response.groups[0].items,
+          searchedPlaces: response.data.response.groups[0].items
         }, this.loadMap())
       })
       .catch(error => {
@@ -74,7 +76,7 @@ class App extends Component {
       map: map
     })
 
-    // Creates the InfoWindo
+    // Creates the InfoWindow
     this.infoWindow = new window.google.maps.InfoWindow({});
     let bounds = new window.google.maps.LatLngBounds();
 
@@ -101,6 +103,7 @@ class App extends Component {
     this.state.map.fitBounds(bounds);
   }
 
+  // https://stackblitz.com/edit/react-qubgz4?file=App.js
   showInfoWindow(marker) {
     this.infoWindow.setContent(marker.title);
     this.infoWindow.open(marker.map, marker);
@@ -127,14 +130,43 @@ class App extends Component {
     });
   }
 
-  // help from simonswiss: https://www.youtube.com/watch?v=A590QnMxsYM
+  // help from simonswiss: https://www.youtube.com/watch?v=A590QnMxsYM & https://github.com/annjkai/FEND-nmap/blob/master/src/App.js
   filterUpdate(value) {
     this.setState({
       query: value
     })
+    const { mapMarkers, places, query } = this.state
+    if (query) {
+      const match = new RegExp(escapeRegExp(this.state.query), 'i')
+      mapMarkers.forEach(marker => {
+        return marker.setVisible(false)
+      })
+      this.setState({
+        searchedPlaces: places
+          .filter(place => {
+            return match.test(place.venue.name)
+          }),
+        searchedMarkers: mapMarkers
+          .filter(marker => {
+            return match.test(marker.title)
+          })
+          .forEach(marker => {
+            return marker.setVisible(true)
+          })
+      })
+    } else {
+      mapMarkers.map(marker => {
+        return marker.setVisible(true)
+      })
+      this.setState({
+        searchedPlaces: places,
+        searchedMarkers: mapMarkers
+      })
+    }
   }
 
   render() {
+    /*
     // Should I try to add something here to change the visibility of my markers???
     let filterPlaces
     if (this.state.query) {
@@ -143,13 +175,14 @@ class App extends Component {
     } else {
       filterPlaces = this.state.places;
     }
+    */
 
     return (
       <div className="App">
         <div id="map"></div>
         <Aside
           filterUpdate={this.filterUpdate.bind(this)}
-          filterPlaces={filterPlaces}
+          filterPlaces={this.state.searchedPlaces}
           showInfo={this.showInfo.bind(this)}
         />
       </div>
